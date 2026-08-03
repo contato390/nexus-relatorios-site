@@ -1,0 +1,3 @@
+# Site estático de página única — não há necessidade de rewrite catch-all.
+# (Um rewrite "/* /index.html 200" pode, em alguns casos, interferir com o
+# processamento de formulários do Netlify Forms, por isso foi removido.)

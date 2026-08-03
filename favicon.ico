@@ -1,0 +1,77 @@
+'use strict';
+
+/* --- Navbar scroll --- */
+const navbar = document.getElementById('navbar');
+const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+
+function onScroll() {
+  const y = window.scrollY;
+  if (navbar) navbar.classList.toggle('scrolled', y > 60);
+  const floatingCta = document.getElementById('floatingCta');
+  if (floatingCta) floatingCta.classList.toggle('visible', y > 500);
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+/* --- Mobile menu --- */
+function openMobileMenu() {
+  const m = document.getElementById('mobileMenu');
+  const btn = document.getElementById('menuToggle');
+  if (!m || !btn) return;
+  m.style.display = 'flex';
+  requestAnimationFrame(() => m.classList.add('open'));
+  btn.classList.add('open');
+  btn.setAttribute('aria-expanded', 'true');
+  btn.setAttribute('aria-label', 'Fechar menu');
+  document.body.style.overflow = 'hidden';
+}
+function closeMobileMenu() {
+  const m = document.getElementById('mobileMenu');
+  const btn = document.getElementById('menuToggle');
+  if (!m || !btn) return;
+  m.classList.remove('open');
+  setTimeout(() => { m.style.display = 'none'; }, 350);
+  btn.classList.remove('open');
+  btn.setAttribute('aria-expanded', 'false');
+  btn.setAttribute('aria-label', 'Abrir menu');
+  document.body.style.overflow = '';
+}
+function toggleMobileMenu() {
+  const btn = document.getElementById('menuToggle');
+  if (!btn) return;
+  if (btn.classList.contains('open')) { closeMobileMenu(); } else { openMobileMenu(); }
+}
+
+/* --- Smooth scroll for in-page anchors (e.g. footer/home links with #section) --- */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    const targetId = a.getAttribute('href');
+    if (targetId.length < 2) return;
+    const t = document.querySelector(targetId);
+    if (t) {
+      e.preventDefault();
+      closeMobileMenu();
+      t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+/* --- Keyboard support for nav logo --- */
+const navLogo = document.querySelector('.nav-logo');
+if (navLogo) {
+  navLogo.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+}
+
+/* --- Fade-in animations --- */
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll(
+  '[data-animate], .section-label, .section-title, .section-subtitle, .service-page-block'
+).forEach(el => io.observe(el));
